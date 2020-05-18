@@ -11,7 +11,7 @@ var opts = {
     var animating = false;
     self.init = function (container, animate, opts) {
         var target = self.target(container);
-        if (self.dependencies() == null) return;
+        if (self.dependencies() === null) return;
 
         target.forEach(function (_this) {
             if (_this.offsetWidth <= 1) return; // Element must be hidden - Do Nothing
@@ -35,11 +35,10 @@ var opts = {
                 },
                 animate: (animate ? true : false)
             };
-            console.log(animating)
             if (!animating) {
                 self.draw(props);
             }
-            
+
             // For each target:
             // get id
             // get percentage value
@@ -49,9 +48,7 @@ var opts = {
     self.draw = function (props) {
         // Ensure only one svg per element (stops duplication on redraw)
         document.querySelector('#' + props.id + ' svg') ? d3.select('#' + props.id + ' svg').remove() : null;
-
         d3.select('#' + props.id).append('svg').attr('id', props.id + '-svg').attr('width', props.svgWidth).attr('height', props.svgHeight);
-
         var canvas = d3.select('#' + props.id + '-svg');
 
         drawBase();
@@ -68,20 +65,19 @@ var opts = {
 
             if (props.animate) {
                 var animate = setInterval(function () {
-                    if(curVal == endVal){
+                    if (curVal === endVal) {
                         animating = false;
                         clearInterval(animate);
                     } else {
                         animating = true;
                     }
-                    console.log(animating)
                     d3.select('#' + props.id + ' .meter').remove();
                     d3.select('#' + props.id + ' .svg-label').remove();
 
                     drawArc(0, curVal, props.style.primaryColor, 'meter');
                     drawLabel(curVal, props.style.primaryColor);
 
-                    
+
                     curVal++;
                 }, 10);
 
@@ -102,33 +98,33 @@ var opts = {
                 .outerRadius(props.svgWidth / 2 - inset)
                 .innerRadius(props.svgWidth / 2 - (props.svgWidth / 15 - inset))
                 .startAngle(sAngle / 100 * Math.PI * 2)
-                .endAngle(eAngle / 100 * Math.PI * 2)
+                .endAngle(eAngle / 100 * Math.PI * 2);
 
             //Append path and arc to path
             canvas.append('path').attr('class', className).attr('fill', color).attr('d', arc).attr('transform', 'translate(' + props.startPos.x + "," + props.startPos.y + '), rotate(0)');
         }
-    }
+    };
 
     self.target = function (container) {
         var result = document.querySelectorAll(container).length > 0 ? document.querySelectorAll(container) : document.querySelectorAll('[data-radial-percentage]');
         if (!result.length > 0) return;
 
         return result;
-    }
+    };
     self.dependencies = function (container) {
         //if (d3 == undefined) return null;
         return true;
-    }
+    };
 
 })(radialPercentage);
 
 window.addEventListener("load", function () {
-    setTimeout(function () {
-        radialPercentage.init(null, true, null);
-    }, 200);
+   setTimeout(function () {
+       radialPercentage.init(null, true, null);
+   }, 200);
 
 });
 
 window.addEventListener("resize", function () {
-    radialPercentage.init(null, false, opts);
+   radialPercentage.init(null, false, opts);
 });
