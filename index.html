@@ -10,28 +10,41 @@
 
     <title>Document</title>
 
-<style>
-    .chart-first, .chart-third {
-        fill: #425563;
-    }
+    <style>
+        .chart-first,
+        .chart-third {
+            fill: #425563;
+        }
 
-    .needle, .needle-center {
-        fill: #c7c7c7;
-    }
-</style>
+        .needle,
+        .needle-center {
+            fill: #c7c7c7;
+        }
+    </style>
 </head>
 <h1>Radial Percentage test</h1>
 <button type="button" onclick="radialPercentage.init('#radialGraphContainer1', true, null);">Click</button>
 <br>
+
 <body style=" width:100%;">
 
-    <div class="container" style="display:inline-block; width: calc(50% - 80px)">
+    <div class="container" style="display:inline-block; width: calc(33% - 180px)">
         <div id="example-1" data-radial-percentage="75">
         </div>
+
+    </div>
+    <div class="container" style="display:inline-block; width: calc(33% - 180px)">
+        <div id="example-2" data-radial-percentage="33">
+        </div>
+
+    </div>
+    <div class="container" style="display:inline-block; width: calc(33% - 180px)">
+        <div id="example-3" data-radial-percentage="0">
+        </div>
+
     </div>
 
-    
-    
 </body>
 <script type="text/javascript" src="js/radialPercentage.js"></script>
+
 </html>

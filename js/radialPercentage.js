@@ -1,7 +1,7 @@
 var radialPercentage = {};
-var opts = {
+var radial_opts = {
     //backgroundColor: 'green'
-
+    text: "Viewed"
 };
 // options needed:
 // - base color
@@ -11,12 +11,18 @@ var opts = {
     var animating = false;
     self.init = function (container, animate, opts) {
         var target = self.target(container);
+        if (!target) return;
         if (self.dependencies() === null) return;
 
         target.forEach(function (_this) {
             if (_this.offsetWidth <= 1) return; // Element must be hidden - Do Nothing
 
-            var elWidth = _this.offsetWidth,
+            var paddingL = window.getComputedStyle(_this, null).getPropertyValue('padding-left'),
+                paddingR = window.getComputedStyle(_this, null).getPropertyValue('padding-right');
+                paddingX = Math.ceil(parseInt(paddingL)) + Math.ceil(parseInt(paddingR));
+            console.log(paddingX);
+
+            var elWidth = _this.offsetWidth - (paddingX + 2),
                 percentage = _this.getAttribute('data-radial-percentage');
 
             var props = {
@@ -30,18 +36,16 @@ var opts = {
                 },
                 val: percentage,
                 style: {
-                    backgroundColor: (!opts || !opts.backgroundColor ? "#cccccc" : opts.backgroundColor),
-                    primaryColor: (!opts || !opts.primaryColor ? "#425563" : opts.primaryColor)
+                    backgroundColor: !opts || !opts.backgroundColor ? "#cccccc" : opts.backgroundColor,
+                    primaryColor: !opts || !opts.primaryColor ? "#425563" : opts.primaryColor
                 },
-                animate: (animate ? true : false)
+                animate: (animate ? true : false),
+                text: !opts || !opts.text ? "Complete" : opts.text
             };
             if (!animating) {
                 self.draw(props);
             }
 
-            // For each target:
-            // get id
-            // get percentage value
         });
     };
 
@@ -65,7 +69,9 @@ var opts = {
 
             if (props.animate) {
                 var animate = setInterval(function () {
-                    if (curVal === endVal) {
+                    console.log(curVal === endVal);
+                    if (curVal >= endVal) {
+
                         animating = false;
                         clearInterval(animate);
                     } else {
@@ -73,6 +79,7 @@ var opts = {
                     }
                     d3.select('#' + props.id + ' .meter').remove();
                     d3.select('#' + props.id + ' .svg-label').remove();
+                    d3.select('#' + props.id + ' .svg-label-text').remove();
 
                     drawArc(0, curVal, props.style.primaryColor, 'meter');
                     drawLabel(curVal, props.style.primaryColor);
@@ -88,7 +95,14 @@ var opts = {
         }
 
         function drawLabel(val, color) {
-            canvas.append('text').attr('class', "svg-label").attr('fill', color).attr('transform', 'translate(' + props.startPos.x + "," + props.startPos.y + ')').text(val);
+            var textSize = props.svgWidth / 2 * 0.4,
+                labelX = props.startPos.x,
+                labelY = props.startPos.y,
+                textY = props.startPos.y + textSize - 5;
+
+            canvas.append('text').attr('class', "svg-label").attr('fill', color).attr('transform', 'translate(' + labelX + "," + labelY + ')').attr('text-anchor', 'middle').attr('font-size', textSize + 'px').text(val + '%');
+            canvas.append('text').attr('class', "svg-label-text").attr('fill', color).attr('transform', 'translate(' + labelX + "," + textY + ')').attr('text-anchor', 'middle').attr('font-size', (textSize - 10) + 'px').text(props.text);
+            
         }
 
         function drawArc(sAngle, eAngle, color, className, inset) {
@@ -96,7 +110,7 @@ var opts = {
             // Arc properties
             var arc = d3.svg.arc()
                 .outerRadius(props.svgWidth / 2 - inset)
-                .innerRadius(props.svgWidth / 2 - (props.svgWidth / 15 - inset))
+                .innerRadius(props.svgWidth / 2 - (props.svgWidth / 10 - inset))
                 .startAngle(sAngle / 100 * Math.PI * 2)
                 .endAngle(eAngle / 100 * Math.PI * 2);
 
@@ -120,11 +134,11 @@ var opts = {
 
 window.addEventListener("load", function () {
    setTimeout(function () {
-       radialPercentage.init(null, true, null);
+       radialPercentage.init(null, true, radial_opts);
    }, 200);
 
 });
 
 window.addEventListener("resize", function () {
-   radialPercentage.init(null, false, opts);
+   radialPercentage.init(null, false, radial_opts);
 });
